@@ -1,17 +1,17 @@
 spring:
   application:
     name: AIDemo
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: 123456
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
   ai:
     vectorstore:
-      pgvector:
-        index-type: HNSW
-        distance-type: COSINE_DISTANCE
-        dimensions: 1536
-        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+      redis:
+        index-name: product-index
+        prefix: product
+        
     google:
       genai:
         api-key: ${GOOGLE_API_KEY}
@@ -20,12 +20,6 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-  sql:
-    init:
-      schema-locations:
-        - classpath:init/schema.sql
-      mode: always
-      
 springdoc:
   api-docs:
     enabled: true
