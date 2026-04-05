@@ -1,22 +1,11 @@
 spring:
   application:
     name: AIDemo
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
   ai:
-    vectorstore:
-      redis:
-        index-name: product-index
-        prefix: product
-        
-    google:
-      genai:
-        api-key: ${GOOGLE_API_KEY}
-        embedding:
-          api-key: ${GOOGLE_API_KEY}
+    retry:
+      max-attempts: 2
+    openai:
+      api-key: ${OPENAI_API_KEY}
   main:
     allow-bean-definition-overriding: true
 
