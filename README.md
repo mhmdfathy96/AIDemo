@@ -1,67 +1,76 @@
-# AI Demo Project
+# AI Demo: Output Converter Branch
 
-A Spring Boot application demonstrating AI capabilities using **Spring AI** and **OpenAI**. Specifically, this project implements Audio Generation (Text-to-Speech) and Transcription (Speech-to-Text) features.
+This branch demonstrates how to use **Spring AI** and its **Output Converter** (specifically `BeanOutputConverter`) to map AI model responses to structured Java objects (POJOs).
 
 ## 🚀 Features
 
-- **Text-to-Speech (TTS)**: Convert string text into high-quality audio bytes.
-- **Speech-to-Text (Transcription)**: Transcribe uploaded audio files into text using Whisper.
-- **Swagger Documentation**: Interactive API documentation for easy testing.
+- **Structured Movie Recommendations**: Recommends a movie based on genre, year, and language, returning a structured `Movie` object.
+- **Bulk Recommendations**: Recommends a list of movies (e.g., top 10) and maps them to a `List<Movie>`.
+- **Automatic JSON Mapping**: Uses `BeanOutputConverter` to ensure the LLM's raw JSON response is correctly parsed into Java classes.
+- **Swagger Documentation**: Interactive UI to test the endpoints easily.
 
 ## 🛠 Tech Stack
 
 - **Java 21**
-- **Spring Boot 4.x** (Early version)
-- **Spring AI**: Integration with OpenAI.
-- **SpringDoc OpenAPI**: For API documentation and testing UI.
-- **Maven**: Project management and build tool.
+- **Spring Boot 4.0.4**
+- **Spring AI (2.0.0-M3)**: For OpenAI integration and output conversion.
+- **SpringDoc OpenAPI (3.0.2)**: For Swagger UI.
+- **Maven**: Build and dependency management.
 
 ## 🚦 Getting Started
 
 ### Prerequisites
 
-- Java 21 or higher installed.
-- Maven (or use the provided `./mvnw` wrapper).
-- An **OpenAI API Key**.
+- Java 21 or higher.
+- OpenAI API Key.
 
 ### Configuration
 
-1. Locate the `.env` file in the root directory.
-2. Add your OpenAI API key:
+1. Create or update the `.env` file in the project root:
    ```env
-   OPENAI_API_KEY=your_actual_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
+2. The application uses `application.yaml` for Spring AI settings.
 
 ### Running the Application
 
-Use the Maven wrapper to start the server:
+Start the server using the Maven wrapper:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`.
+The application will be available at `http://localhost:8080`.
 
 ## 🧪 Testing the APIs
 
-The easiest way to test the APIs is through the **Swagger UI**.
+Navigate to the **Swagger UI** to interact with the endpoints:
 
-1. Start the application.
-2. Open your browser and navigate to: `http://localhost:8080/swagger-ui/index.html`
-3. You will see two main endpoints:
+**URL**: `http://localhost:8080/swagger-ui/index.html`
 
-### 1. Text to Speech
-- **Endpoint**: `GET /audio/textToSpeech/{text}`
-- **Description**: Provide a text string as a path variable, and the API will return a byte array (audio file).
-- **Test**: Click "Try it out", enter some text, and "Execute". You can download the response to listen to the audio.
+### 1. Raw String Recommendation (Baseline)
+- **Endpoint**: `GET /main/recommendMovie`
+- **Params**: `genre`, `year`, `lang`
+- **Output**: Raw JSON string (no conversion).
+- **Controller**: `MainController.java`
 
-### 2. Speech to Text
-- **Endpoint**: `POST /audio/speechToText`
-- **Description**: Upload an audio file (e.g., `.mp3`, `.wav`) as `multipart/form-data`.
-- **Test**: Click "Try it out", upload a small audio file in the `audio` field, and "Execute". The transcribed text will appear in the response body.
+### 2. Single Movie Recommendation (Structured)
+- **Endpoint**: `GET /movie/recommend`
+- **Params**: `genre`, `year`, `lang`
+- **Output**: A single `Movie` JSON object.
+- **Controller**: `MovieController.java`
 
-## 📁 Project Structure
+### 3. List of Movie Recommendations (Structured)
+- **Endpoint**: `GET /movie/recommend/list`
+- **Params**: `genre`, `year`, `lang`
+- **Output**: A JSON array of `Movie` objects.
+- **Controller**: `MovieController.java`
 
-- `AudioGenContoller.java`: The primary REST controller handling the audio logic.
-- `application.yaml`: Configuration for Spring AI and OpenAI integration.
-- `.env`: (Ignored/Template) Where sensitive keys are stored locally.
+## 📁 Key Files in this Branch
+
+- `Movie.java`: The POJO representing the movie data structure.
+- `MovieController.java`: Contains the logic for using `ChatClient` and `BeanOutputConverter`.
+- `pom.xml`: Includes the necessary Spring AI starters.
+
+---
+*Note: This README is specific to the `output-converter` branch.*
