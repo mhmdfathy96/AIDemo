@@ -1,67 +1,86 @@
-# AI Demo Project
+# AIDemo - Spring AI Showcase
 
-A Spring Boot application demonstrating AI capabilities using **Spring AI** and **OpenAI**. Specifically, this project implements Audio Generation (Text-to-Speech) and Transcription (Speech-to-Text) features.
+This project demonstrates various capabilities of **Spring AI**, showcasing different AI-driven features implemented across multiple branches. Each branch focuses on a specific aspect of AI integration.
 
-## 🚀 Features
+## 🚀 Features Overview
 
-- **Text-to-Speech (TTS)**: Convert string text into high-quality audio bytes.
-- **Speech-to-Text (Transcription)**: Transcribe uploaded audio files into text using Whisper.
-- **Swagger Documentation**: Interactive API documentation for easy testing.
+Experimental features have been developed across dedicated branches to keep the codebase modular:
 
-## 🛠 Tech Stack
+### 1. Audio Generation & Transcription (`audio-generation`)
+- **Text-to-Speech (TTS)**: Converts input text into high-quality audio bytes using `TextToSpeechModel`.
+- **Speech-to-Text (STT)**: Transcribes uploaded audio files into text using `TranscriptionModel` (OpenAI Whisper).
+- **Endpoint Example**: `GET /audio/textToSpeech/{text}` and `POST /audio/speechToText`.
 
-- **Java 21**
-- **Spring Boot 4.x** (Early version)
-- **Spring AI**: Integration with OpenAI.
-- **SpringDoc OpenAPI**: For API documentation and testing UI.
-- **Maven**: Project management and build tool.
+### 2. Image Generation (`image-generation`)
+- Generates images based on descriptive prompts using the `ImageModel`.
+- **Endpoint Example**: `GET /image/generate?message={prompt}`.
 
-## 🚦 Getting Started
+### 3. Retrieval Augmented Generation (RAG) (`rag`, `pgvector`, `redisvector`)
+- **Context-Aware Chat**: Enhances AI responses by providing relevant context from local documents (`src/main/resources/product_details.txt`).
+- **Vector Stores**:
+    - **PGVector**: Integration with PostgreSQL for vector similarity search.
+    - **Redis**: Integration with Redis for fast vector retrieval.
+- **Data Ingestion**: Automatic loading and embedding of documents into the vector store.
+
+### 4. Structured Output Converters (`output-converter`)
+- **Bean Output Converter**: Demonstrates how to force the AI to return structured JSON that maps directly to Java POJOs (e.g., a `Movie` object).
+- **Endpoint Example**: `GET /movies?genre=action&year=2023&lang=en`.
+
+---
+
+## 🛠️ How to Run
 
 ### Prerequisites
+- JDK 17 or higher
+- Maven
+- OpenAI API Key (or other supported providers)
+- Docker (for vector store branches like `pgvector` or `redis`)
 
-- Java 21 or higher installed.
-- Maven (or use the provided `./mvnw` wrapper).
-- An **OpenAI API Key**.
-
-### Configuration
-
-1. Locate the `.env` file in the root directory.
-2. Add your OpenAI API key:
-   ```env
-   OPENAI_API_KEY=your_actual_api_key_here
-   ```
-
-### Running the Application
-
-Use the Maven wrapper to start the server:
-
+### Setup Environment
+Create a `.env` file or export your API key:
 ```bash
+export OPENAI_API_KEY='your-key-here'
+```
+
+### Build and Run
+```bash
+./mvnw clean install
 ./mvnw spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`.
+---
 
 ## 🧪 Testing the APIs
 
-The easiest way to test the APIs is through the **Swagger UI**.
+You can test the features using `curl` or any API client (Postman/Insomnia).
 
-1. Start the application.
-2. Open your browser and navigate to: `http://localhost:8080/swagger-ui/index.html`
-3. You will see two main endpoints:
+### Audio Features
+```bash
+# Text to Speech
+curl -o output.mp3 http://localhost:8080/audio/textToSpeech/Hello%20Spring%20AI
 
-### 1. Text to Speech
-- **Endpoint**: `GET /audio/textToSpeech/{text}`
-- **Description**: Provide a text string as a path variable, and the API will return a byte array (audio file).
-- **Test**: Click "Try it out", enter some text, and "Execute". You can download the response to listen to the audio.
+# Speech to Text
+curl -X POST -F "audio=@path/to/your/audio.mp3" http://localhost:8080/audio/speechToText
+```
 
-### 2. Speech to Text
-- **Endpoint**: `POST /audio/speechToText`
-- **Description**: Upload an audio file (e.g., `.mp3`, `.wav`) as `multipart/form-data`.
-- **Test**: Click "Try it out", upload a small audio file in the `audio` field, and "Execute". The transcribed text will appear in the response body.
+### Image Generation
+```bash
+curl "http://localhost:8080/image/generate?message=A%20futuristic%20cityscape%20with%20flying%20cars"
+```
 
-## 📁 Project Structure
+### Movie Recommendations (Structured Output)
+```bash
+curl "http://localhost:8080/movies?genre=sci-fi&year=1999&lang=en"
+```
 
-- `AudioGenContoller.java`: The primary REST controller handling the audio logic.
-- `application.yaml`: Configuration for Spring AI and OpenAI integration.
-- `.env`: (Ignored/Template) Where sensitive keys are stored locally.
+### RAG (Chat with Context)
+```bash
+curl "http://localhost:8080/chat?message=Tell%20me%20about%20the%20available%20products"
+```
+
+---
+
+## 📂 Project Structure
+- `src/main/java/com/example/AIDemo`: Contains the controllers and configuration for AI services.
+- `src/main/resources`: Contains `application.yaml` and reference documents for RAG.
+- `docker-compose.yml`: For spinning up vector databases.
